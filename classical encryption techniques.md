@@ -3,7 +3,7 @@
 ## Substitution Techniques
 
 ### Caesar Cipher
-![Caesar Cipher](images/caeser.png)
+
 - **Description**: A substitution cipher that shifts characters by a fixed number of positions in the alphabet.
 - **Formula**: `C = (P + K) mod 26` (Encryption), `P = (C - K) mod 26` (Decryption)
   - `C`: Ciphertext letter
@@ -23,7 +23,7 @@
   - Decrypted Text: `HELLO`
 
 ### Monoalphabetic Cipher
-![Monoalphabetic Cipher](images/Monoalphabetic Cipher.png)
+
 - **Description**: Each letter of the plaintext is mapped to a unique letter of the ciphertext alphabet.
 - **Encryption**:
   1. Create a substitution table (e.g., A -> Q, B -> W, etc.).
@@ -37,7 +37,7 @@
   - Decrypted Text: `HELLO`
 
 ### Playfair Cipher
-![Playfair Cipher](images/Playfair Cipher.png)
+
 - **Description**: A digraph substitution cipher using a 5x5 matrix of letters.
 - **Encryption**:
   1. Create a 5x5 matrix using a keyword (e.g., `KEYWORD`).
@@ -50,7 +50,7 @@
   - Decrypted Text: `HELLO`
 
 ### Hill Cipher
-![Hill Cipher](images/Hill Cipher.png)
+
 - **Description**: A polygraphic substitution cipher using linear algebra.
 - **Formula**: `C = KP mod 26` (Encryption), `P = K^(-1)C mod 26` (Decryption)
   - `C`: Ciphertext vector
@@ -74,7 +74,7 @@
 ## Transposition Techniques
 
 ### Rail Fence Cipher
-![Rail Fence Cipher](images/Rail Fence Cipher.png)
+
 - **Description**: A transposition cipher that writes plaintext in a zigzag pattern.
 - **Encryption**:
   1. Write plaintext in a zigzag pattern across multiple rows.
@@ -87,7 +87,7 @@
   - Decrypted Text: `HELLO WORLD`
 
 ### Row-Column Transposition
-![Row-Column Transposition](images/Row-Column Transposition.png)
+
 - **Description**: Rearranges the plaintext into a grid and reads it in a different order.
 - **Encryption**:
   1. Write plaintext into a grid row by row.
