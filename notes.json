@@ -1,19 +1,56 @@
 [
     {
-        "title": "Study Plan for Cryptography and Cyber Security",
-        "file": "study%20plan.md"
+        "unit": "Study Plan",
+        "notes": [
+            {
+                "title": "Study Plan for Cryptography and Cyber Security",
+                "file": "study%20plan.md"
+            }
+        ]
     },
     {
-        "title": "OSI Security Architecture and Security Attacks",
-        "file": "OSI%20security%20architecture.md"
+        "unit": "Unit 1: Introduction to Cryptography ",
+        "notes": [
+            {
+                "title": "OSI Security Architecture and Security Attacks",
+                "file": "OSI%20security%20architecture.md"
+            },
+            {
+                "title": "Security Services, Mechanisms and Attacks, and A Model for Network Security",
+                "file": "security%20services.md"
+            },
+            {
+                "title": "classical encryption techniques",
+                "file": "classical%20encryption%20techniques.md"
+            },
+            {
+                "title": "Information Theory and Cryptanalyis",
+                "file": "Informationtheory%20%20cryptanalysis.md"
+            }
+        ]
     },
     {
-        "title": "Security Services, Mechanisms and Attacks, and A Model for Network Security",
-        "file": "security%20services.md"
+        "unit": "Unit 2: Encryption Algorithms in Cryptography ",
+        "notes": [
+            
+        ]
     },
     {
-        "title":"classical encryption techniques",
-        "file":"classical%20encryption%20techniques.md"
+        "unit": "Unit 3: Authentication Algorithms ",
+        "notes": [
+            
+        ]
+    },
+    {
+        "unit": "Unit 4: Introduction to Cyber Security ",
+        "notes": [
+            
+        ]
+    },
+    {
+        "unit": "Unit 5: Web Security Vulnerabilities ",
+        "notes": [
+            
+        ]
     }
-    
 ]

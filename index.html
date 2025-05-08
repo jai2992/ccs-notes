@@ -170,45 +170,26 @@
     <script>
         async function loadNotes() {
             try {
-                document.getElementById('notes-container').innerHTML = '<div class="loading">Decrypting notes database...</div>';
-                
-                // Simulate loading for effect
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
                 const response = await fetch('notes.json');
                 if (!response.ok) {
                     throw new Error(`Failed to fetch notes.json: ${response.statusText}`);
                 }
                 const notes = await response.json();
                 const notesContainer = document.getElementById('notes-container');
-                notesContainer.innerHTML = '';
 
-                notes.forEach((note, index) => {
-                    const link = document.createElement('a');
-                    link.className = 'file-link cyber-border';
-                    link.href = `view.html?file=${encodeURIComponent(note.file)}`;
-                    link.innerHTML = `<span class="note-index">${index + 1}.</span> ${note.title}`;
-                    
-                    // Add delayed appearance animation
-                    link.style.opacity = '0';
-                    link.style.transform = 'translateY(20px)';
-                    link.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    
-                    notesContainer.appendChild(link);
-                    
-                    // Trigger animation after a delay based on index
-                    setTimeout(() => {
-                        link.style.opacity = '1';
-                        link.style.transform = 'translateY(0)';
-                    }, 200 * (index + 1));
+                notes.forEach(unit => {
+                    const unitHeader = document.createElement('h2');
+                    unitHeader.textContent = unit.unit;
+                    notesContainer.appendChild(unitHeader);
+
+                    unit.notes.forEach(note => {
+                        const link = document.createElement('a');
+                        link.className = 'file-link cyber-border';
+                        link.href = `view.html?file=${encodeURIComponent(note.file)}`;
+                        link.textContent = note.title;
+                        notesContainer.appendChild(link);
+                    });
                 });
-                
-                // Initialize the particle effect
-                initParticles();
-                
-                // Initialize the Matrix effect
-                initMatrix();
-                
             } catch (error) {
                 console.error(error);
                 document.getElementById('notes-container').innerHTML = `<p style='color: red;'>Error loading notes: ${error.message}</p>`;
@@ -325,7 +306,10 @@
             setInterval(draw, 35);
         }
 
-        document.addEventListener('DOMContentLoaded', loadNotes);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNotes();
+            initMatrix();
+        });
         
         window.addEventListener('resize', () => {
             if (window.innerWidth !== canvas.width || window.innerHeight !== canvas.height) {
@@ -341,10 +325,7 @@
         <h1>CYBERSECURITY STUDY NOTES</h1>
     </header>
     <main>
-        <h2>AVAILABLE DOCUMENTS</h2>
-        <div id="notes-container">
-            <div class="loading">Initializing secure connection...</div>
-        </div>
+        <div id="notes-container"></div>
     </main>
 </body>
 </html>
