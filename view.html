@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Document Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a1a;
+            color: #5fe896;
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        header {
+            background: rgba(10, 10, 20, 0.8);
+            color: #5fe896;
+            padding: 1.5rem 0;
+            text-align: center;
+            border-bottom: 2px solid #5fe896;
+            box-shadow: 0 0 15px rgba(95, 232, 150, 0.5);
+            position: relative;
+        }
+        
+        header h1 {
+            margin: 0;
+            text-shadow: 0 0 10px rgba(95, 232, 150, 0.7);
+            font-size: 2.5rem;
+            letter-spacing: 3px;
+        }
+        
+        main {
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        #content {
+            background: rgba(20, 20, 40, 0.8);
+            padding: 2rem;
+            border: 2px solid #5fe896;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(95, 232, 150, 0.3);
+            position: relative;
+            margin-top: 20px;
+            overflow: hidden;
+            animation: fadeIn 1s ease;
+        }
+        
+        #content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #5fe896, transparent);
+            animation: scan-horizontal 3s ease-in-out infinite;
+        }
+        
+        @keyframes scan-horizontal {
+            0% {
+                left: -100%;
+                right: 100%;
+            }
+            50% {
+                left: 0%;
+                right: 0%;
+            }
+            100% {
+                left: 100%;
+                right: -100%;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #content h1, #content h2, #content h3 {
+            color: #5fe896;
+            border-bottom: 1px solid rgba(95, 232, 150, 0.3);
+            padding-bottom: 5px;
+            text-shadow: 0 0 5px rgba(95, 232, 150, 0.5);
+        }
+        
+        #content a {
+            color: #5fe896;
+            text-decoration: none;
+            border-bottom: 1px dotted #5fe896;
+            transition: all 0.3s ease;
+        }
+        
+        #content a:hover {
+            border-bottom: 1px solid #5fe896;
+            text-shadow: 0 0 8px rgba(95, 232, 150, 0.7);
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(20, 20, 40, 0.7);
+            border: 1px solid #5fe896;
+            color: #5fe896;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .back-button::before {
+            content: '←';
+            margin-right: 10px;
+        }
+        
+        .back-button:hover {
+            background: rgba(30, 30, 60, 0.9);
+            box-shadow: 0 0 10px rgba(95, 232, 150, 0.5);
+            transform: translateX(-5px);
+        }
+        
+        .matrix-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+        
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            color: #5fe896;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+        }
+        
+        .loading::after {
+            content: '';
+            width: 50px;
+            height: 50px;
+            margin-top: 20px;
+            border: 3px solid transparent;
+            border-top: 3px solid #5fe896;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Style for code blocks */
+        #content pre {
+            background: rgba(10, 10, 20, 0.6);
+            border: 1px solid rgba(95, 232, 150, 0.3);
+            border-radius: 5px;
+            padding: 15px;
+            overflow-x: auto;
+            position: relative;
+        }
+        
+        #content pre::before {
+            content: 'code';
+            position: absolute;
+            top: 0;
+            right: 10px;
+            font-size: 0.8em;
+            color: rgba(95, 232, 150, 0.7);
+        }
+        
+        #content code {
+            font-family: 'Courier New', monospace;
+            color: #5fe896;
+        }
+        
+        /* Style for lists */
+        #content ul, #content ol {
+            border-left: 2px solid rgba(95, 232, 150, 0.5);
+            padding-left: 20px;
+        }
+        
+        #content li {
+            margin-bottom: 8px;
+        }
+        
+        /* Highlight important security concepts */
+        #content strong {
+            color: #5fe896;
+            text-shadow: 0 0 5px rgba(95, 232, 150, 0.5);
+            font-weight: bold;
+        }
+        
+        .cyber-border {
+            position: relative;
+        }
+        
+        .cyber-border::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 1px solid #5fe896;
+            border-radius: 7px;
+            pointer-events: none;
+            clip-path: polygon(
+                0% 5%, 5% 0%, 95% 0%, 100% 5%,
+                100% 95%, 95% 100%, 5% 100%, 0% 95%
+            );
+        }
+        
+        /* Add animation for headings */
+        @keyframes glitch {
+            0% {
+                text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75),
+                            -0.05em -0.025em 0 rgba(0, 255, 0, 0.75),
+                            -0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            14% {
+                text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75),
+                            -0.05em -0.025em 0 rgba(0, 255, 0, 0.75),
+                            -0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            15% {
+                text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75),
+                            0.025em 0.025em 0 rgba(0, 255, 0, 0.75),
+                            -0.05em -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            49% {
+                text-shadow: -0.05em -0.025em 0 rgba(255, 0, 0, 0.75),
+                            0.025em 0.025em 0 rgba(0, 255, 0, 0.75),
+                            -0.05em -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            50% {
+                text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75),
+                            0.05em 0 0 rgba(0, 255, 0, 0.75),
+                            0 -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            99% {
+                text-shadow: 0.025em 0.05em 0 rgba(255, 0, 0, 0.75),
+                            0.05em 0 0 rgba(0, 255, 0, 0.75),
+                            0 -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            100% {
+                text-shadow: -0.025em 0 0 rgba(255, 0, 0, 0.75),
+                            -0.025em -0.025em 0 rgba(0, 255, 0, 0.75),
+                            -0.025em -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+        }
+        
+        #content h1:hover, #content h2:hover {
+            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+        }
+    </style>
+    <script>
+        async function loadContent() {
+            const params = new URLSearchParams(window.location.search);
+            const file = params.get('file');
+
+            if (!file) {
+                document.getElementById('content').innerHTML = '<p style="color: red;">No file specified.</p>';
+                return;
+            }
+
+            try {
+                // Show loading animation
+                document.getElementById('content').innerHTML = '<div class="loading">Decrypting secure document...</div>';
+                
+                // Simulate decryption for effect
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                const response = await fetch(file);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch ${file}: ${response.statusText}`);
+                }
+                const content = await response.text();
+                
+                // Simulate processing
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Process the markdown and add our cyber enhancements
+                const parsedContent = marked.parse(content);
+                document.getElementById('content').innerHTML = parsedContent;
+                
+                // Add animated glowing highlight to security-related terms
+                highlightSecurityTerms();
+                
+                // Initialize the particle effect
+                initParticles();
+                
+                // Initialize the Matrix effect
+                initMatrix();
+                
+                // Add animation to list items
+                animateListItems();
+                
+            } catch (error) {
+                console.error(error);
+                document.getElementById('content').innerHTML = `<p style='color: red;'>Error loading content: ${error.message}</p>`;
+            }
+        }
+        
+        function highlightSecurityTerms() {
+            const securityTerms = [
+                'Security', 'Encryption', 'Authentication', 'Authorization', 'Firewall', 
+                'Attack', 'Vulnerability', 'Threat', 'Malware', 'Virus', 'Trojan', 
+                'Phishing', 'Cryptography', 'SSL', 'TLS', 'SSH', 'Cipher', 'Hash', 
+                'Integrity', 'Confidentiality', 'Availability', 'Access Control', 'IDS',
+                'Intrusion', 'Detection', 'Prevention', 'Passive', 'Active', 'Insider'
+            ];
+            
+            const content = document.getElementById('content');
+            const text = content.innerHTML;
+            
+            let newText = text;
+            securityTerms.forEach(term => {
+                const regex = new RegExp(`\\b${term}\\b`, 'gi');
+                newText = newText.replace(regex, `<span class="security-term" style="color: #5fe896; text-shadow: 0 0 5px rgba(95, 232, 150, 0.7); font-weight: bold;">$&</span>`);
+            });
+            
+            content.innerHTML = newText;
+        }
+        
+        function animateListItems() {
+            const listItems = document.querySelectorAll('#content li');
+            listItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(20px)';
+                item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateX(0)';
+                }, 100 * (index + 1));
+            });
+        }
+
+        function initParticles() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 40,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: '#5fe896'
+                    },
+                    shape: {
+                        type: 'circle',
+                    },
+                    opacity: {
+                        value: 0.3,
+                        random: true,
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#5fe896',
+                        opacity: 0.2,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 0.8,
+                        direction: 'none',
+                        random: true,
+                        straight: false,
+                        out_mode: 'out',
+                        bounce: false,
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: 'grab'
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: 'push'
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: {
+                                opacity: 1
+                            }
+                        },
+                        push: {
+                            particles_nb: 4
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+        }
+
+        function initMatrix() {
+            const canvas = document.createElement('canvas');
+            canvas.className = 'matrix-effect';
+            document.body.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const characters = '01010101';
+            const columns = canvas.width / 20;
+            const drops = [];
+            
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(10, 10, 26, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#0f0';
+                ctx.font = '15px monospace';
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                    ctx.fillText(text, i * 20, drops[i] * 20);
+                    
+                    if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    
+                    drops[i]++;
+                }
+            }
+            
+            setInterval(draw, 35);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadContent();
+            
+            // Create Back Button
+            const mainElement = document.querySelector('main');
+            const backButton = document.createElement('a');
+            backButton.href = 'index.html';
+            backButton.className = 'back-button cyber-border';
+            backButton.textContent = 'Back to Documents';
+            mainElement.insertBefore(backButton, mainElement.firstChild);
+        });
+        
+        window.addEventListener('resize', () => {
+            const canvas = document.querySelector('.matrix-effect');
+            if (canvas && (window.innerWidth !== canvas.width || window.innerHeight !== canvas.height)) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <header>
+        <h1>SECURE DOCUMENT VIEWER</h1>
+    </header>
+    <main>
+        <div id="content" class="cyber-border">
+            <div class="loading">Initializing secure connection...</div>
+        </div>
+    </main>
+</body>
+</html>

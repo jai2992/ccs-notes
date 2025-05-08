@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Notes</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a1a;
+            color: #5fe896;
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        header {
+            background: rgba(10, 10, 20, 0.8);
+            color: #5fe896;
+            padding: 1.5rem 0;
+            text-align: center;
+            border-bottom: 2px solid #5fe896;
+            box-shadow: 0 0 15px rgba(95, 232, 150, 0.5);
+            position: relative;
+        }
+        
+        header h1 {
+            margin: 0;
+            text-shadow: 0 0 10px rgba(95, 232, 150, 0.7);
+            font-size: 2.5rem;
+            letter-spacing: 3px;
+        }
+        
+        main {
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        h2 {
+            border-bottom: 1px solid #5fe896;
+            padding-bottom: 10px;
+            text-shadow: 0 0 8px rgba(95, 232, 150, 0.5);
+        }
+        
+        .file-link {
+            display: block;
+            margin: 1.5rem 0;
+            padding: 1.2rem;
+            background: rgba(20, 20, 40, 0.7);
+            border: 1px solid #5fe896;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #5fe896;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(95, 232, 150, 0.2);
+        }
+        
+        .file-link:hover {
+            background: rgba(30, 30, 60, 0.9);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(95, 232, 150, 0.4);
+        }
+        
+        .file-link::before {
+            content: '>';
+            position: absolute;
+            left: 10px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .file-link:hover::before {
+            opacity: 1;
+            left: 20px;
+        }
+        
+        .file-link:hover {
+            padding-left: 35px;
+        }
+        
+        .matrix-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: rgba(20, 20, 40, 0.7);
+            border: 1px solid #5fe896;
+            color: #5fe896;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: rgba(30, 30, 60, 0.9);
+            box-shadow: 0 0 10px rgba(95, 232, 150, 0.5);
+        }
+        
+        @keyframes scanning {
+            0% {
+                background-position: 0% 0%;
+            }
+            100% {
+                background-position: 0% 100%;
+            }
+        }
+        
+        #notes-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, #5fe896, transparent);
+            animation: scanning 2s linear infinite;
+            z-index: 1;
+        }
+        
+        #notes-container {
+            position: relative;
+        }
+
+        .cyber-border {
+            position: relative;
+        }
+        
+        .cyber-border::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border: 1px solid #5fe896;
+            border-radius: 7px;
+            pointer-events: none;
+            clip-path: polygon(
+                0% 5%, 5% 0%, 95% 0%, 100% 5%,
+                100% 95%, 95% 100%, 5% 100%, 0% 95%
+            );
+        }
+
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            color: #5fe896;
+        }
+    </style>
+    <script>
+        async function loadNotes() {
+            try {
+                document.getElementById('notes-container').innerHTML = '<div class="loading">Decrypting notes database...</div>';
+                
+                // Simulate loading for effect
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                const response = await fetch('notes.json');
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch notes.json: ${response.statusText}`);
+                }
+                const notes = await response.json();
+                const notesContainer = document.getElementById('notes-container');
+                notesContainer.innerHTML = '';
+
+                notes.forEach((note, index) => {
+                    const link = document.createElement('a');
+                    link.className = 'file-link cyber-border';
+                    link.href = `view.html?file=${encodeURIComponent(note.file)}`;
+                    link.innerHTML = `<span class="note-index">${index + 1}.</span> ${note.title}`;
+                    
+                    // Add delayed appearance animation
+                    link.style.opacity = '0';
+                    link.style.transform = 'translateY(20px)';
+                    link.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    
+                    notesContainer.appendChild(link);
+                    
+                    // Trigger animation after a delay based on index
+                    setTimeout(() => {
+                        link.style.opacity = '1';
+                        link.style.transform = 'translateY(0)';
+                    }, 200 * (index + 1));
+                });
+                
+                // Initialize the particle effect
+                initParticles();
+                
+                // Initialize the Matrix effect
+                initMatrix();
+                
+            } catch (error) {
+                console.error(error);
+                document.getElementById('notes-container').innerHTML = `<p style='color: red;'>Error loading notes: ${error.message}</p>`;
+            }
+        }
+
+        function initParticles() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: '#5fe896'
+                    },
+                    shape: {
+                        type: 'circle',
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: true,
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#5fe896',
+                        opacity: 0.2,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 1,
+                        direction: 'none',
+                        random: true,
+                        straight: false,
+                        out_mode: 'out',
+                        bounce: false,
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: 'grab'
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: 'push'
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: {
+                                opacity: 1
+                            }
+                        },
+                        push: {
+                            particles_nb: 4
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+        }
+
+        function initMatrix() {
+            const canvas = document.createElement('canvas');
+            canvas.className = 'matrix-effect';
+            document.body.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const characters = '01010101';
+            const columns = canvas.width / 20;
+            const drops = [];
+            
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(10, 10, 26, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#0f0';
+                ctx.font = '15px monospace';
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                    ctx.fillText(text, i * 20, drops[i] * 20);
+                    
+                    if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    
+                    drops[i]++;
+                }
+            }
+            
+            setInterval(draw, 35);
+        }
+
+        document.addEventListener('DOMContentLoaded', loadNotes);
+        
+        window.addEventListener('resize', () => {
+            if (window.innerWidth !== canvas.width || window.innerHeight !== canvas.height) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <header>
+        <h1>CYBERSECURITY STUDY NOTES</h1>
+    </header>
+    <main>
+        <h2>AVAILABLE DOCUMENTS</h2>
+        <div id="notes-container">
+            <div class="loading">Initializing secure connection...</div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,19 @@
+[
+    {
+        "title": "Study Plan for Cryptography and Cyber Security",
+        "file": "study%20plan.md"
+    },
+    {
+        "title": "OSI Security Architecture and Security Attacks",
+        "file": "OSI%20security%20architecture.md"
+    },
+    {
+        "title": "Security Services, Mechanisms and Attacks, and A Model for Network Security",
+        "file": "security%20services.md"
+    },
+    {
+        "title":"classical encryption techniques",
+        "file":"classical%20encryption%20techniques.md"
+    }
+    
+]
